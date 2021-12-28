@@ -7,7 +7,7 @@
 
 <VBox fx:id="vBoxParent" alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro3.mediaplayerproject.Controller">
    <children>
-      <MediaView fx:id="mvVideo" fitHeight="200.0" fitWidth="200.0" />
+      <MediaView fx:id="mvVideo" />
       <Slider fx:id="sliderTime" style="-fx-cursor: hand;">
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -22,41 +22,39 @@
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding></Button>
-            <HBox fx:id="hBoxVolume">
+            <HBox fx:id="hBoxVolume" alignment="CENTER">
                <children>
-                  <Label fx:id="labelVolume">
+                  <Button fx:id="buttonVolume" mnemonicParsing="false">
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </HBox.margin>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding></Label>
+                     </padding>
+                  </Button>
                   <Slider fx:id="sliderVolume" max="1.0" style="-fx-cursor: hand;" />
                </children>
             </HBox>
-            <Label fx:id="labelCurrentTime" text="Label">
-               <HBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </HBox.margin>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding></Label>
-            <Label fx:id="labelTotalTime" text="Label">
-               <HBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </HBox.margin>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding></Label>
             <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
                <children>
-                  <Label fx:id="labelFullscreen">
+                  <Label fx:id="labelCurrentTime" text="Label">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Label>
+                  <Label fx:id="labelTotalTime" text="Label">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Button fx:id="buttonFullscreen" mnemonicParsing="false">
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </HBox.margin>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
-                     <HBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </HBox.margin></Label>
+                  </Button>
                </children>
             </HBox>
          </children>
