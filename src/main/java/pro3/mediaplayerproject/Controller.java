@@ -77,37 +77,37 @@ public class Controller implements Initializable {
 
         final int IV_SIZE = 25;
 
-        Image imagePlay = new Image(new File("src/resources/pro3/mediaplayerproject/icons/control_play_blue.png").toURI().toString());
+        Image imagePlay = new Image(new File("src/main/resources/pro3/mediaplayerproject/icons/control_play_blue.png").toURI().toString());
         ivPlay = new ImageView(imagePlay);
         ivPlay.setFitHeight(IV_SIZE);
         ivPlay.setFitWidth(IV_SIZE);
 
-        Image imagePause = new Image(new File("src/resources/pro3/mediaplayerproject/icons/control_pause_blue.png").toURI().toString());
+        Image imagePause = new Image(new File("src/main/resources/pro3/mediaplayerproject/icons/control_pause_blue.png").toURI().toString());
         ivPause = new ImageView(imagePause);
         ivPause.setFitHeight(IV_SIZE);
         ivPause.setFitWidth(IV_SIZE);
 
-        Image imageReplay = new Image(new File("src/resources/pro3/mediaplayerproject/icons/control_repeat_blue.png").toURI().toString());
+        Image imageReplay = new Image(new File("src/main/resources/pro3/mediaplayerproject/icons/control_repeat_blue.png").toURI().toString());
         ivReplay = new ImageView(imageReplay);
         ivReplay.setFitHeight(IV_SIZE);
         ivReplay.setFitWidth(IV_SIZE);
 
-        Image imageVolume = new Image(new File("src/resources/pro3/mediaplayerproject/icons/sound.png").toURI().toString());
+        Image imageVolume = new Image(new File("src/main/resources/pro3/mediaplayerproject/icons/sound.png").toURI().toString());
         ivVolume = new ImageView(imageVolume);
         ivVolume.setFitHeight(IV_SIZE);
         ivVolume.setFitWidth(IV_SIZE);
 
-        Image imageMute = new Image(new File("src/resources/pro3/mediaplayerproject/icons/sound_mute.png").toURI().toString());
+        Image imageMute = new Image(new File("src/main/resources/pro3/mediaplayerproject/icons/sound_mute.png").toURI().toString());
         ivMute = new ImageView(imageMute);
         ivMute.setFitHeight(IV_SIZE);
         ivMute.setFitWidth(IV_SIZE);
 
-        Image imageFullscreen = new Image(new File("src/resources/pro3/mediaplayerproject/icons/arrow_out.png").toURI().toString());
+        Image imageFullscreen = new Image(new File("src/main/resources/pro3/mediaplayerproject/icons/arrow_out.png").toURI().toString());
         ivFullscreen = new ImageView(imageFullscreen);
         ivFullscreen.setFitHeight(IV_SIZE);
         ivFullscreen.setFitWidth(IV_SIZE);
 
-        Image imageExitFS = new Image(new File("src/resources/pro3/mediaplayerproject/icons/arrow_in.png").toURI().toString());
+        Image imageExitFS = new Image(new File("src/main/resources/pro3/mediaplayerproject/icons/arrow_in.png").toURI().toString());
         ivExitFS = new ImageView(imageExitFS);
         ivExitFS.setFitHeight(IV_SIZE);
         ivExitFS.setFitWidth(IV_SIZE);
