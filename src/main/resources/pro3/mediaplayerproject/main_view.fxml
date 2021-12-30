@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.media.*?>
+
+<BorderPane fx:id="borderPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro3.mediaplayerproject.Controller">
+    <top>
+        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="Media">
+                    <items>
+                  <MenuItem fx:id="menuOpenFile" mnemonicParsing="false" text="Open File..." />
+                        <MenuItem fx:id="menuExit" mnemonicParsing="false" text="Exit" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem fx:id="menuAbout" mnemonicParsing="false" text="About..." />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <MediaView fx:id="mvVideo" BorderPane.alignment="CENTER" />
+    </center>
+    <bottom>
+        <VBox alignment="BOTTOM_LEFT" BorderPane.alignment="CENTER">
+            <children>
+                <Slider fx:id="sliderTime" style="-fx-cursor: hand;">
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </padding>
+                </Slider>
+                <HBox fx:id="hBoxControls" alignment="CENTER_LEFT">
+                    <children>
+                        <Button fx:id="buttonPlayPause" mnemonicParsing="false">
+                            <HBox.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                            </HBox.margin>
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                            </padding>
+                        </Button>
+                        <HBox fx:id="hBoxVolume" alignment="CENTER">
+                            <children>
+                                <Button fx:id="buttonVolume" mnemonicParsing="false">
+                                    <HBox.margin>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </padding>
+                                </Button>
+                                <Slider fx:id="sliderVolume" max="1.0" style="-fx-cursor: hand;" />
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label fx:id="labelCurrentTime" text="Label">
+                                    <HBox.margin>
+                                        <Insets />
+                                    </HBox.margin>
+                                </Label>
+                                <Label fx:id="labelTotalTime" text="Label">
+                                    <HBox.margin>
+                                        <Insets right="5.0" />
+                                    </HBox.margin>
+                                </Label>
+                                <Button fx:id="buttonFullscreen" mnemonicParsing="false">
+                                    <HBox.margin>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </padding>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+                </HBox>
+            </children>
+        </VBox>
+    </bottom>
+</BorderPane>

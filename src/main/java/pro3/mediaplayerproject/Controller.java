@@ -1,5 +1,6 @@
 package pro3.mediaplayerproject;
 
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -10,19 +11,19 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -34,9 +35,10 @@ import java.util.concurrent.Callable;
 public class Controller implements Initializable {
 
     @FXML
-    private VBox vBoxParent;
+    private BorderPane borderPane;
 
-
+    @FXML
+    private MenuBar menuBar;
 
     @FXML
     private MediaView mvVideo;
@@ -69,6 +71,12 @@ public class Controller implements Initializable {
 
     @FXML
     private Slider sliderTime;
+
+    @FXML
+    private MenuItem menuOpenFile;
+
+    @FXML
+    private MenuItem menuExit;
 
 
     private ImageView ivPlay;
@@ -131,9 +139,92 @@ public class Controller implements Initializable {
         buttonVolume.setGraphic(ivMute);
         buttonFullscreen.setGraphic(ivFullscreen);
 
-        mpVideo.play();
+
+        //MENUS
+        //opening files
+        menuOpenFile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Open File");
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("All Files", "*.*"),
+                        new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.m4a", "*.aiff", "*.aif", "*.m3u8"),
+                        new FileChooser.ExtensionFilter("Video Files", "*.mp4", "*.m4v", "*.fxm", "*.flv", "*.m3u8"));
+                Stage stage = (Stage) borderPane.getScene().getWindow();
+                File selectedFile = fileChooser.showOpenDialog(stage);
+                if (selectedFile != null) {
+                    mpVideo.stop();
+
+                    mediaVideo = new Media(selectedFile.toURI().toString());
+                    mpVideo = new MediaPlayer(mediaVideo);
+                    mvVideo.setMediaPlayer(mpVideo);
+
+                    initializePlayerItems();
+                }
+            }
+        });
+
+        //exiting the application
+        menuExit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Platform.exit();
+            }
+        });
+
+        //END MENUS ----------------------------------------------
 
 
+        //if the window size changes, resize the video accordingly
+        borderPane.sceneProperty().addListener(new ChangeListener<Scene>() {
+            @Override
+            public void changed(ObservableValue<? extends Scene> observable, Scene oldScene, Scene newScene) {
+                if(oldScene == null && newScene != null){
+                    mvVideo.fitHeightProperty().bind(newScene.heightProperty().subtract(hBoxControls.heightProperty()).subtract(menuBar.heightProperty()).subtract(30));
+                    mvVideo.fitWidthProperty().bind(newScene.widthProperty());
+                }
+            }
+        });
+
+
+        initializePlayerItems();
+
+    }
+
+    public void bindCurrentTimeLabel(){
+        labelCurrentTime.textProperty().bind(Bindings.createStringBinding(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return getTime(mpVideo.getCurrentTime()) + " / ";
+            }
+        }, mpVideo.currentTimeProperty()));
+    }
+
+
+    public String getTime(Duration time){
+        int hours = (int) time.toHours();
+        int minutes = (int) time.toMinutes();
+        int seconds = (int) time.toSeconds();
+
+        if(seconds > 59)
+            seconds = seconds % 60;
+        if(minutes > 59)
+            minutes = minutes % 60;
+
+        if(hours > 0)
+            return String.format("%d:%02d:%02d", hours, minutes, seconds);
+        else
+            return String.format("%02d:%02d", minutes, seconds);
+    }
+
+
+    //initialize all the player controllers
+    //this method is executed each time that the user changes the media source
+    public void initializePlayerItems(){
+
+        //PLAY-PAUSE BUTTON
+        //change the button graphic if the video is playing, paused, or ended
         buttonPlayPause.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -155,8 +246,7 @@ public class Controller implements Initializable {
             }
         });
 
-
-
+        //VOLUME CONTROLS
         //bind the video volume with the volume slider
         mpVideo.volumeProperty().bindBidirectional(sliderVolume.valueProperty());
 
@@ -175,10 +265,8 @@ public class Controller implements Initializable {
             }
         });
 
-        //set volume to 100%
-        mpVideo.setVolume(1.0);
-
-
+        //volume button
+        //change the button graphic if the video has sound or not
         buttonVolume.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -194,43 +282,38 @@ public class Controller implements Initializable {
             }
         });
 
-        vBoxParent.sceneProperty().addListener(new ChangeListener<Scene>() {
-            @Override
-            public void changed(ObservableValue<? extends Scene> observable, Scene oldScene, Scene newScene) {
-                if(oldScene == null && newScene != null){
-                    mvVideo.fitHeightProperty().bind(newScene.heightProperty().subtract(hBoxControls.heightProperty()));
-                    mvVideo.fitWidthProperty().bind(newScene.widthProperty());
-                }
-            }
-        });
 
+        //FULLSCREEN BUTTON
+        //change the button graphic if the video is in fullscreen or normal
         buttonFullscreen.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-               Button button = (Button) event.getSource();
-               Stage stage = (Stage) button.getScene().getWindow();
+                Button button = (Button) event.getSource();
+                Stage stage = (Stage) button.getScene().getWindow();
 
-               if(stage.isFullScreen()){
-                   stage.setFullScreen(false);
-                   buttonFullscreen.setGraphic(ivFullscreen);
-               }
-               else{
-                   stage.setFullScreen(true);
-                   buttonFullscreen.setGraphic(ivExitFS);
-               }
+                if(stage.isFullScreen()){
+                    stage.setFullScreen(false);
+                    buttonFullscreen.setGraphic(ivFullscreen);
+                }
+                else{
+                    stage.setFullScreen(true);
+                    buttonFullscreen.setGraphic(ivExitFS);
+                }
 
-               stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+                //change the button graphic if the ESC key is pressed
+                stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
                     @Override
                     public void handle(KeyEvent event) {
                         if(event.getCode() == KeyCode.ESCAPE){
                             buttonFullscreen.setGraphic(ivFullscreen);
                         }
                     }
-               });
+                });
             }
         });
 
 
+        //LISTENERS
         //check how long the video is and change the time slider and time label accordingly
         mpVideo.totalDurationProperty().addListener(new ChangeListener<Duration>() {
             @Override
@@ -239,7 +322,6 @@ public class Controller implements Initializable {
                 labelTotalTime.setText(getTime(newDuration));
             }
         });
-
 
         //if the time slider is changed, forward or rewind the video to the new time
         sliderTime.valueProperty().addListener(new ChangeListener<Number>() {
@@ -255,9 +337,9 @@ public class Controller implements Initializable {
         //as the video plays, move the time slider accordingly
         mpVideo.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
-            public void changed(ObservableValue<? extends Duration> observable, Duration oldTime, Duration newTime) {
+            public void changed(ObservableValue<? extends Duration> observable, Duration oldDuration, Duration newDuration) {
                 if(!sliderTime.isValueChanging()){
-                    sliderTime.setValue(newTime.toSeconds());
+                    sliderTime.setValue(newDuration.toSeconds());
                 }
             }
         });
@@ -272,35 +354,16 @@ public class Controller implements Initializable {
         });
 
 
-
         //bind the video current time with the time label
         bindCurrentTimeLabel();
 
+        //---------------------------------------------
 
-    }
+        //play the video
+        mpVideo.play();
 
-    public void bindCurrentTimeLabel(){
-        labelCurrentTime.textProperty().bind(Bindings.createStringBinding(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                return getTime(mpVideo.getCurrentTime()) + " / ";
-            }
-        }, mpVideo.currentTimeProperty()));
-    }
+        //set volume to 100%
+        mpVideo.setVolume(1.0);
 
-    public String getTime(Duration time){
-        int hours = (int) time.toHours();
-        int minutes = (int) time.toMinutes();
-        int seconds = (int) time.toSeconds();
-
-        if(seconds > 59)
-            seconds = seconds % 60;
-        if(minutes > 59)
-            minutes = minutes % 60;
-
-        if(hours > 0)
-            return String.format("%d:%02d:%02d", hours, minutes, seconds);
-        else
-            return String.format("%02d:%02d", minutes, seconds);
     }
 }
