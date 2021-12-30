@@ -12,33 +12,52 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.awt.*;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 
 public class Controller implements Initializable {
+    private final String GITHUB_LINK = "https://github.com/cristiancfm/media-player-project";
 
     @FXML
     private BorderPane borderPane;
 
     @FXML
     private MenuBar menuBar;
+
+    @FXML
+    private MenuItem menuOpenFile;
+
+    @FXML
+    private MenuItem menuExit;
+
+    @FXML
+    private MenuItem menuAbout;
 
     @FXML
     private MediaView mvVideo;
@@ -71,12 +90,6 @@ public class Controller implements Initializable {
 
     @FXML
     private Slider sliderTime;
-
-    @FXML
-    private MenuItem menuOpenFile;
-
-    @FXML
-    private MenuItem menuExit;
 
 
     private ImageView ivPlay;
@@ -170,6 +183,36 @@ public class Controller implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 Platform.exit();
+            }
+        });
+
+        //about window
+        menuAbout.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Alert aboutWindow = new Alert(Alert.AlertType.INFORMATION);
+                aboutWindow.setTitle("About Media Player");
+                aboutWindow.setHeaderText("Media Player v.1.0");
+
+                FlowPane flowPane = new FlowPane();
+                Label label = new Label("This application was coded by Cristian Ferreiro Montoiro");
+
+                Hyperlink githubLink = new Hyperlink(GITHUB_LINK);
+                githubLink.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        try {
+                            Desktop.getDesktop().browse(new URI(GITHUB_LINK));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                flowPane.getChildren().addAll(label, githubLink);
+                aboutWindow.getDialogPane().contentProperty().setValue(flowPane);
+
+                aboutWindow.show();
             }
         });
 
