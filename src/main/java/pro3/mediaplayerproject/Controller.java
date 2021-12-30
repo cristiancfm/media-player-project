@@ -191,7 +191,7 @@ public class Controller implements Initializable {
                 Label label = new Label("""
                         This application can play video and audio files.
                         Coded by Cristian Ferreiro Montoiro.
-                        Icons from fatcow.com""");
+                        Icons from https://www.fatcow.com/free-icons""");
 
                 Hyperlink githubLink = new Hyperlink(GITHUB_LINK);
                 githubLink.setOnAction(new EventHandler<ActionEvent>() {
