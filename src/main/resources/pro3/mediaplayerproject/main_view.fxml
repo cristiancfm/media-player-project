@@ -24,7 +24,7 @@
         </MenuBar>
     </top>
     <center>
-        <MediaView fx:id="mvVideo" BorderPane.alignment="CENTER" />
+        <MediaView fx:id="mediaView" BorderPane.alignment="CENTER" />
     </center>
     <bottom>
         <VBox alignment="BOTTOM_LEFT" BorderPane.alignment="CENTER">

@@ -1,8 +1,6 @@
 package pro3.mediaplayerproject;
 
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,28 +18,25 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 
 public class Controller implements Initializable {
+    private final String APP_VERSION = "1.0";
     private final String GITHUB_LINK = "https://github.com/cristiancfm/media-player-project";
 
     @FXML
@@ -60,15 +55,12 @@ public class Controller implements Initializable {
     private MenuItem menuAbout;
 
     @FXML
-    private MediaView mvVideo;
-    private MediaPlayer mpVideo;
-    private Media mediaVideo;
+    private MediaView mediaView;
+    private MediaPlayer mediaPlayer;
+    private Media media;
 
     @FXML
     private HBox hBoxControls;
-
-    @FXML
-    private HBox hBoxVolume;
 
     @FXML
     private Button buttonPlayPause;
@@ -107,9 +99,9 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        mediaVideo = new Media(new File("src/main/resources/pro3/mediaplayerproject/example.mp4").toURI().toString());
-        mpVideo = new MediaPlayer(mediaVideo);
-        mvVideo.setMediaPlayer(mpVideo);
+        media = new Media(new File("src/main/resources/pro3/mediaplayerproject/example.mp4").toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+        mediaView.setMediaPlayer(mediaPlayer);
 
         final int IV_SIZE = 25;
 
@@ -167,13 +159,14 @@ public class Controller implements Initializable {
                 Stage stage = (Stage) borderPane.getScene().getWindow();
                 File selectedFile = fileChooser.showOpenDialog(stage);
                 if (selectedFile != null) {
-                    mpVideo.stop();
+                    mediaPlayer.stop();
 
-                    mediaVideo = new Media(selectedFile.toURI().toString());
-                    mpVideo = new MediaPlayer(mediaVideo);
-                    mvVideo.setMediaPlayer(mpVideo);
+                    media = new Media(selectedFile.toURI().toString());
+                    mediaPlayer = new MediaPlayer(media);
+                    mediaView.setMediaPlayer(mediaPlayer);
 
                     initializePlayerItems();
+                    mediaPlayer.play();
                 }
             }
         });
@@ -192,10 +185,13 @@ public class Controller implements Initializable {
             public void handle(ActionEvent event) {
                 Alert aboutWindow = new Alert(Alert.AlertType.INFORMATION);
                 aboutWindow.setTitle("About Media Player");
-                aboutWindow.setHeaderText("Media Player v.1.0");
+                aboutWindow.setHeaderText("Media Player v."+ APP_VERSION);
 
                 FlowPane flowPane = new FlowPane();
-                Label label = new Label("This application was coded by Cristian Ferreiro Montoiro");
+                Label label = new Label("""
+                        This application can play video and audio files.
+                        Coded by Cristian Ferreiro Montoiro.
+                        Icons from fatcow.com""");
 
                 Hyperlink githubLink = new Hyperlink(GITHUB_LINK);
                 githubLink.setOnAction(new EventHandler<ActionEvent>() {
@@ -224,8 +220,8 @@ public class Controller implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Scene> observable, Scene oldScene, Scene newScene) {
                 if(oldScene == null && newScene != null){
-                    mvVideo.fitHeightProperty().bind(newScene.heightProperty().subtract(hBoxControls.heightProperty()).subtract(menuBar.heightProperty()).subtract(30));
-                    mvVideo.fitWidthProperty().bind(newScene.widthProperty());
+                    mediaView.fitHeightProperty().bind(newScene.heightProperty().subtract(hBoxControls.heightProperty()).subtract(menuBar.heightProperty()).subtract(30));
+                    mediaView.fitWidthProperty().bind(newScene.widthProperty());
                 }
             }
         });
@@ -233,15 +229,21 @@ public class Controller implements Initializable {
 
         initializePlayerItems();
 
+        //play the video
+        mediaPlayer.play();
+
+        //set volume to 100%
+        mediaPlayer.setVolume(1.0);
+
     }
 
     public void bindCurrentTimeLabel(){
         labelCurrentTime.textProperty().bind(Bindings.createStringBinding(new Callable<String>() {
             @Override
             public String call() throws Exception {
-                return getTime(mpVideo.getCurrentTime()) + " / ";
+                return getTime(mediaPlayer.getCurrentTime()) + " / ";
             }
-        }, mpVideo.currentTimeProperty()));
+        }, mediaPlayer.currentTimeProperty()));
     }
 
 
@@ -279,11 +281,11 @@ public class Controller implements Initializable {
                 }
                 if(isPlaying){
                     buttonPlay.setGraphic(ivPlay);
-                    mpVideo.pause();
+                    mediaPlayer.pause();
                     isPlaying = false;
                 } else{
                     buttonPlay.setGraphic(ivPause);
-                    mpVideo.play();
+                    mediaPlayer.play();
                     isPlaying = true;
                 }
             }
@@ -291,14 +293,14 @@ public class Controller implements Initializable {
 
         //VOLUME CONTROLS
         //bind the video volume with the volume slider
-        mpVideo.volumeProperty().bindBidirectional(sliderVolume.valueProperty());
+        mediaPlayer.volumeProperty().bindBidirectional(sliderVolume.valueProperty());
 
         //show muted speaker icon when the video is muted or normal speaker
         //when the video has volume
         sliderVolume.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                if (mpVideo.getVolume() != 0.0) {
+                if (mediaPlayer.getVolume() != 0.0) {
                     buttonVolume.setGraphic(ivVolume);
                     isMuted = false;
                 } else {
@@ -358,7 +360,7 @@ public class Controller implements Initializable {
 
         //LISTENERS
         //check how long the video is and change the time slider and time label accordingly
-        mpVideo.totalDurationProperty().addListener(new ChangeListener<Duration>() {
+        mediaPlayer.totalDurationProperty().addListener(new ChangeListener<Duration>() {
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldDuration, Duration newDuration) {
                 sliderTime.setMax(newDuration.toSeconds());
@@ -370,15 +372,15 @@ public class Controller implements Initializable {
         sliderTime.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldTime, Number newTime) {
-                double videoTime = mpVideo.getCurrentTime().toSeconds();
+                double videoTime = mediaPlayer.getCurrentTime().toSeconds();
                 if (Math.abs(videoTime - newTime.doubleValue()) > 0.2) {
-                    mpVideo.seek(Duration.seconds(sliderTime.getValue()));
+                    mediaPlayer.seek(Duration.seconds(sliderTime.getValue()));
                 }
             }
         });
 
         //as the video plays, move the time slider accordingly
-        mpVideo.currentTimeProperty().addListener(new ChangeListener<Duration>() {
+        mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
             @Override
             public void changed(ObservableValue<? extends Duration> observable, Duration oldDuration, Duration newDuration) {
                 if(!sliderTime.isValueChanging()){
@@ -388,7 +390,7 @@ public class Controller implements Initializable {
         });
 
 
-        mpVideo.setOnEndOfMedia(new Runnable() {
+        mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
                 buttonPlayPause.setGraphic(ivReplay);
@@ -399,14 +401,6 @@ public class Controller implements Initializable {
 
         //bind the video current time with the time label
         bindCurrentTimeLabel();
-
-        //---------------------------------------------
-
-        //play the video
-        mpVideo.play();
-
-        //set volume to 100%
-        mpVideo.setVolume(1.0);
 
     }
 }
